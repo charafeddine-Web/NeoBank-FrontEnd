@@ -19,7 +19,6 @@ export class JwtInterceptor implements HttpInterceptor {
         },
       });
     }
-
     return next.handle(cloned).pipe(
       catchError((err) => {
         if (err && err.status === 401) {

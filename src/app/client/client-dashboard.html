@@ -1,0 +1,96 @@
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Left column: comptes et actions -->
+  <section class="lg:col-span-2 space-y-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <!-- Account card 1 -->
+      <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
+        <div>
+          <div class="text-sm text-gray-500">Compte courant</div>
+          <div class="text-2xl font-semibold mt-2">8,670.00 DH</div>
+          <div class="text-xs text-gray-400 mt-1">IBAN: MA12 3456 7890 1234 5678</div>
+        </div>
+        <div class="mt-4 flex gap-3">
+          <button class="flex-1 bg-ab-primary text-white py-2 rounded-md">Dépôt</button>
+          <button class="flex-1 border border-gray-200 text-gray-700 py-2 rounded-md">Retrait</button>
+          <button class="flex-1 bg-ab-accent text-white py-2 rounded-md">Virement</button>
+        </div>
+      </div>
+
+      <!-- Account card 2 -->
+      <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
+        <div>
+          <div class="text-sm text-gray-500">Épargne</div>
+          <div class="text-2xl font-semibold mt-2">3,780.00 DH</div>
+          <div class="text-xs text-gray-400 mt-1">Numéro de compte: 00-1234567-89</div>
+        </div>
+        <div class="mt-4 flex gap-3">
+          <button class="flex-1 bg-ab-primary text-white py-2 rounded-md">Dépôt</button>
+          <button class="flex-1 border border-gray-200 text-gray-700 py-2 rounded-md">Retrait</button>
+          <button class="flex-1 bg-ab-accent text-white py-2 rounded-md">Virement</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload justificatif UI (UI only) -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-lg font-semibold mb-2">Upload justificatif</h2>
+      <p class="text-sm text-gray-500">Pour les montants supérieurs à 10 000 DH, joignez un justificatif (PDF, JPG, PNG).</p>
+      <div class="mt-4 border-2 border-dashed border-gray-200 rounded-md p-4 text-center">
+        <p class="text-sm text-gray-500">Glissez & déposez votre fichier ici, ou</p>
+        <button class="mt-3 px-4 py-2 bg-ab-primary text-white rounded-md">Choisir un fichier</button>
+        <p class="text-xs text-gray-400 mt-2">Formats acceptés : PDF, JPG, PNG — Taille max : 5MB</p>
+      </div>
+    </div>
+
+    <!-- Historique (liste d'exemple) -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-lg font-semibold mb-4">Historique des transactions</h2>
+      <ul class="space-y-3">
+        <li class="flex items-center justify-between">
+          <div>
+            <div class="text-sm font-medium">Paiement Facture - Electricité</div>
+            <div class="text-xs text-gray-500">2026-01-10 • Réf: INV-2345</div>
+          </div>
+          <div class="text-sm text-red-500">- 450.00 DH</div>
+        </li>
+        <li class="flex items-center justify-between">
+          <div>
+            <div class="text-sm font-medium">Virement reçu - Salaire</div>
+            <div class="text-xs text-gray-500">2026-01-01 • Réf: TRF-9876</div>
+          </div>
+          <div class="text-sm text-green-600">+ 9,000.00 DH</div>
+        </li>
+        <li class="flex items-center justify-between">
+          <div>
+            <div class="text-sm font-medium">Retrait DAB</div>
+            <div class="text-xs text-gray-500">2025-12-28 • Réf: ATM-1122</div>
+          </div>
+          <div class="text-sm text-red-500">- 200.00 DH</div>
+        </li>
+      </ul>
+      <div class="mt-4 text-center">
+        <a class="text-sm text-ab-primary hover:underline" href="#">Voir tout l'historique</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right column: quick overview / support -->
+  <aside class="space-y-6">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="text-sm text-gray-500">Résumé</h3>
+      <div class="mt-3">
+        <div class="flex justify-between text-xs text-gray-600"><span>Solde total</span><span class="font-semibold">12,450.00 DH</span></div>
+        <div class="flex justify-between text-xs text-gray-600 mt-2"><span>Ops en attente</span><span class="text-yellow-600 font-semibold">2</span></div>
+        <div class="flex justify-between text-xs text-gray-600 mt-2"><span>Dernière connexion</span><span class="text-gray-500">2026-01-12</span></div>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="text-sm text-gray-500">Support</h3>
+      <div class="mt-3 text-sm text-gray-700">
+        <p>Besoin d'aide ?</p>
+        <a class="text-ab-primary hover:underline" href="#">Contactez le support</a>
+      </div>
+    </div>
+  </aside>
+</div>

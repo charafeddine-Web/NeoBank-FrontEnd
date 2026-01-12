@@ -1,6 +1,122 @@
-/* Tailwind is used; keep minimal local styles */
-
-.container {
-  /* placeholder */
+:host {
+  display: block;
 }
 
+.card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -20px rgba(0, 105, 62, 0.15);
+  border-color: rgba(0, 105, 62, 0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-ab-primary) 0%, var(--color-ab-primary-dark) 100%);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 105, 62, 0.2);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -5px rgba(0, 105, 62, 0.3);
+}
+
+.status-badge {
+  font-size: 0.65rem;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.status-validated {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #dcfce7;
+}
+
+.status-pending {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fef3c7;
+}
+
+.status-rejected {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fee2e2;
+}
+
+.sidebar-link {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 0;
+  background: var(--color-ab-primary);
+  border-radius: 0 4px 4px 0;
+  transition: height 0.3s ease;
+}
+
+.sidebar-link.active {
+  background: rgba(0, 105, 62, 0.05);
+  color: var(--color-ab-primary);
+}
+
+.sidebar-link.active::after {
+  height: 60%;
+}
+
+.modal-backdrop {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(12px) saturate(180%);
+  transition: all 0.4s ease;
+}
+
+.input-field {
+  transition: all 0.3s ease;
+  background: #fcfdfe;
+}
+
+.input-field:focus {
+  background: #fff;
+  border-color: var(--color-ab-primary);
+  box-shadow: 0 0 0 10px rgba(0, 105, 62, 0.03);
+  outline: none;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: slideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.gradient-brand {
+  background: linear-gradient(135deg, var(--color-ab-primary-dark) 0%, var(--color-ab-primary) 50%, #008f55 100%);
+}

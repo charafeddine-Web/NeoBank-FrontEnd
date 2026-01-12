@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { parseTokenRoles } from '../guards/token-utils';
+import { parseTokenRoles, parseTokenPayload } from '../guards/token-utils';
 
 export interface LoginRequest {
   // UI may provide email or username; we'll map to username for the backend
@@ -45,7 +45,7 @@ export class Auth {
   private readonly REFRESH_KEY = 'refresh_token';
   private readonly EXPIRES_AT = 'token_expires_at';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   // If frontend runs on localhost:4200 (dev), point requests to backend on localhost:8080
   private getApiUrl(path: string): string {
@@ -168,5 +168,17 @@ export class Auth {
   getRolesFromToken(): string[] {
     const token = this.getAccessToken();
     return parseTokenRoles(token);
+  }
+
+  getUserInfo(): any {
+    const token = this.getAccessToken();
+    const payload = parseTokenPayload(token);
+    if (!payload) return null;
+    return {
+      id: payload.id || payload.sub,
+      name: payload.name || payload.preferred_username || payload.sub,
+      email: payload.email || '',
+      username: payload.sub || payload.preferred_username
+    };
   }
 }

@@ -1,13 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>NeobankFrontEnd</title>
+  <title>Al Baraka Digital – V3 Frontend Angular</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- Tailwind CDN + configuration for brand colors -->
+  <script>
+    // Tailwind CDN config for runtime (lightweight): define theme extensions before the CDN loads
+    window.tailwind = {
+      config: {
+        theme: {
+          extend: {
+            colors: {
+              'ab-primary': '#00693E', /* Al Baraka Primary */
+              'ab-primary-dark': '#00472B',
+              'ab-accent': '#D4AF37',
+              'ab-muted': '#F6F7F9'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-ab-muted text-gray-900">
   <app-root></app-root>
 </body>
 </html>

@@ -1,1 +1,82 @@
-<p>login works!</p>
+<div class="min-h-screen flex items-center justify-center  p-4">
+  <!-- fond subtil animé optionnel -->
+  <div class="absolute "></div>
+
+  <div class="relative w-full max-w-md">
+    <!-- effet glass + profondeur -->
+    <div class="backdrop-blur-xl bg-white/30 border border-white/20 rounded-2xl shadow-2xl shadow-indigo-500/20 p-10 transition-all duration-500 hover:shadow-indigo-600/30">
+
+      <!-- logo ou titre stylé -->
+      <div class="text-center mb-8">
+
+        <h2 class="mt-4 text-3xl font-bold bg-gradient-to-r  bg-clip-text ">
+          Bienvenue
+        </h2>
+        <p class="mt-2 text-gray-600">Connectez-vous pour continuer</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-6">
+        <div class="relative">
+          <input
+            formControlName="email"
+            type="email"
+            placeholder=" "
+            class="peer w-full px-4 py-3 rounded-xl border border-gray-300 bg-white/40 backdrop-blur-sm focus:border-indigo-500 focus:bg-white/60 focus:ring-0 transition-all outline-none"
+          />
+          <label class="absolute left-4 -top-2.5 px-2 bg-white/80 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-indigo-600 peer-focus:text-sm">
+            Email
+          </label>
+          <div class="mt-1 text-sm text-red-600 min-h-[1.25rem]">
+            <ng-container *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+              <span *ngIf="form.get('email')?.errors?.['required']">Email requis</span>
+              <span *ngIf="form.get('email')?.errors?.['email']">Format invalide</span>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="relative">
+          <input
+            formControlName="password"
+            type="password"
+            placeholder=" "
+            class="peer w-full px-4 py-3 rounded-xl border border-gray-500/30 bg-white/40 backdrop-blur-sm focus:border-indigo-500 focus:bg-white/60 transition-all outline-none"
+          />
+          <label class="absolute left-4 -top-2.5 px-2 bg-white/80 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-indigo-600 peer-focus:text-sm">
+            Mot de passe
+          </label>
+          <div class="mt-1 text-sm text-red-600 min-h-[1.25rem]">
+            <ng-container *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+              <span *ngIf="form.get('password')?.errors?.['required']">Requis</span>
+              <span *ngIf="form.get('password')?.errors?.['minlength']">≥ 8 caractères</span>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Server error -->
+        <div *ngIf="serverError" class="text-red-600 text-center bg-red-50/70 backdrop-blur-sm py-2 rounded-xl">
+          {{ serverError }}
+        </div>
+
+        <!-- Bouton -->
+        <button
+          type="submit"
+          [disabled]="loading || form.invalid"
+          class="relative w-full py-3.5 px-6 bg-gradient-to-r  font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-indigo-700 hover:to-purple-700 transform transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden group"
+        >
+          <span class="relative z-10">
+            {{ loading ? 'Connexion...' : 'Se connecter' }}
+          </span>
+          <div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+        </button>
+
+        <div class="text-center text-sm text-gray-600">
+          Pas encore de compte ?
+          <a routerLink="/register" class="text-indigo-600 font-medium hover:text-indigo-800 transition-colors">
+            Créer un compte
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

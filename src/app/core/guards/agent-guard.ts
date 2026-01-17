@@ -3,10 +3,15 @@ import { inject } from '@angular/core';
 import { Auth } from '../services/auth';
 import { Router } from '@angular/router';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const agentGuard: CanActivateFn = (route, state) => {
   const auth = inject(Auth);
   const router = inject(Router);
-  if (auth.isAuthenticated()) return true;
-  router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
-  return false;
+
+  const token = auth.getAccessToken();
+  if (!token) {
+    router.navigate(['/']);
+    return false;
+  }
+  return true;
 };
+

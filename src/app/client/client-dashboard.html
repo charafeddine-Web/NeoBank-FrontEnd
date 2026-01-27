@@ -75,7 +75,7 @@
         </div>
         <div class="flex-1 min-w-0">
           <p class="text-sm font-black text-slate-900 truncate tracking-tight">{{ accountInfo.fullName }}</p>
-          <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Client Premium</p>
+          <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">{{ accountInfo.role }}</p>
         </div>
         <button (click)="logout()" class="p-2 text-slate-400 hover:text-rose-600 transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,6 +131,22 @@
 
     <!-- Content Area -->
     <div class="flex-1 p-6 lg:p-10 overflow-auto">
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="mb-6 animate-fade-in">
+        <div class="bg-rose-50 border border-rose-100 rounded-2xl p-6 flex items-center gap-4 text-rose-800">
+          <div class="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center flex-shrink-0 text-rose-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+              </path>
+            </svg>
+          </div>
+          <div>
+            <p class="font-black text-sm uppercase tracking-wider">Compte non configuré</p>
+            <p class="text-sm font-bold opacity-80">{{ errorMessage }}</p>
+          </div>
+        </div>
+      </div>
       <!-- Dashboard Section -->
       <div *ngIf="currentSection === 'dashboard'" class="animate-fade-in space-y-10">
         <!-- Account Cards -->
@@ -472,7 +488,8 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z">
                       </path>
-                    </svg></div>
+                    </svg>
+                  </div>
                   <span class="text-sm tracking-tight">Mot de passe</span>
                 </button>
                 <button
@@ -483,7 +500,8 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                       </path>
-                    </svg></div>
+                    </svg>
+                  </div>
                   <span class="text-sm tracking-tight">Authentification 2FA</span>
                 </button>
               </div>
@@ -504,7 +522,6 @@
   </main>
 </div>
 
-<!-- Unified Modal Backdrop -->
 <div *ngIf="activeModal" (click)="closeModal()"
   class="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-8 modal-backdrop animate-fade-in">
   <div (click)="$event.stopPropagation()"
@@ -536,85 +553,88 @@
     </div>
 
     <!-- Form -->
-    <form class="p-8 space-y-8" (submit)="handleOperation(activeModal || '', $event)">
-      <!-- Amount -->
-      <div class="space-y-3">
-        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Montant Opération
-          (DH)</label>
-        <div class="relative group">
-          <input type="number" required min="1" step="0.01" placeholder="0.00" (input)="onAmountChange($event)"
-            class="input-field w-full px-6 py-5 rounded-[1.5rem] ring-4 ring-slate-50/50 focus:ring-emerald-600/10 text-3xl font-black text-slate-900 placeholder:text-slate-200 transition-all border-none">
-          <div class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 font-black text-lg">DH</div>
-        </div>
-        <p *ngIf="activeModal !== 'deposit'" class="text-[11px] font-bold text-slate-500 ml-1">
-          Libre d'utilisation: <span class="text-slate-900">{{ accountInfo.balance | number:'1.2-2' }} DH</span>
-        </p>
-      </div>
-
-      <!-- Transfer Target -->
-      <div *ngIf="activeModal === 'transfer'" class="space-y-3">
-        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Compte Bénéficiaire</label>
-        <input type="text" required placeholder="RIB (24 chiffres)"
-          class="input-field w-full px-6 py-5 rounded-[1.5rem] ring-4 ring-slate-50/50 focus:ring-emerald-600/10 text-base font-bold text-slate-900 placeholder:text-slate-200 transition-all border-none">
-      </div>
-
-      <!-- Description/Motif -->
-      <div class="space-y-3">
-        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
-          {{ activeModal === 'transfer' ? 'Libellé du virement' : 'Note Complémentaire' }}
-        </label>
-        <textarea rows="3"
-          placeholder="{{ activeModal === 'transfer' ? 'Ex: Paiement facture...' : 'Ajoutez une description...' }}"
-          class="input-field w-full px-6 py-5 rounded-[1.5rem] ring-4 ring-slate-50/50 focus:ring-emerald-600/10 text-base font-bold text-slate-900 placeholder:text-slate-200 transition-all border-none resize-none"></textarea>
-      </div>
-
-      <!-- Automated Proof Check -->
-      <div *ngIf="showFileSection" class="animate-fade-in space-y-4">
-        <div
-          class="p-5 bg-amber-50 rounded-2xl flex gap-4 items-start border border-amber-100 shadow-sm shadow-amber-100/50">
-          <div class="p-2 bg-amber-100 rounded-lg text-amber-700">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-              </path>
-            </svg>
+    <div class="max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
+      <form class="p-8 space-y-8" (submit)="handleOperation(activeModal || '', $event)">
+        <!-- Amount -->
+        <div class="space-y-3">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Montant Opération
+            (DH)</label>
+          <div class="relative group">
+            <input type="number" required min="1" step="0.01" placeholder="0.00" (input)="onAmountChange($event)"
+              class="input-field w-full px-6 py-5 rounded-[1.5rem] ring-4 ring-slate-50/50 focus:ring-emerald-600/10 text-3xl font-black text-slate-900 placeholder:text-slate-200 transition-all border-none">
+            <div class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 font-black text-lg">DH</div>
           </div>
-          <p class="text-[11px] font-black text-amber-900 leading-relaxed uppercase tracking-widest">
-            Un justificatif d'identité est requis pour les opérations dépassant 10 000 DH (Régulation BAM).
+          <p *ngIf="activeModal !== 'deposit'" class="text-[11px] font-bold text-slate-500 ml-1">
+            Libre d'utilisation: <span class="text-slate-900">{{ accountInfo.balance | number:'1.2-2' }} DH</span>
           </p>
         </div>
 
-        <div
-          class="border-3 border-dashed border-slate-100 rounded-[2rem] p-10 text-center group hover:border-ab-primary/30 hover:bg-emerald-50/30 transition-all cursor-pointer relative overflow-hidden">
-          <input type="file" id="op-file" class="hidden">
-          <label for="op-file" class="cursor-pointer">
-            <svg
-              class="w-12 h-12 text-slate-200 mx-auto mb-4 group-hover:text-ab-primary group-hover:scale-110 transition-all"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-            </svg>
-            <p class="text-xs font-black text-slate-600 uppercase tracking-widest">Téléverser le justificatif</p>
-            <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase">PDF, JPG (max 10MB)</p>
-          </label>
+        <!-- Transfer Target -->
+        <div *ngIf="activeModal === 'transfer'" class="space-y-3">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Compte
+            Bénéficiaire</label>
+          <input type="text" required placeholder="RIB (24 chiffres)"
+            class="input-field w-full px-6 py-5 rounded-[1.5rem] ring-4 ring-slate-50/50 focus:ring-emerald-600/10 text-base font-bold text-slate-900 placeholder:text-slate-200 transition-all border-none">
         </div>
-      </div>
 
-      <!-- Actions -->
-      <div class="flex gap-4 pt-4">
-        <button type="button" (click)="closeModal()"
-          class="flex-1 px-8 py-5 border-2 border-slate-100 text-slate-400 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px]">
-          Abandonner
-        </button>
-        <button type="submit" [ngClass]="{
+        <!-- Description/Motif -->
+        <div class="space-y-3">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+            {{ activeModal === 'transfer' ? 'Libellé du virement' : 'Note Complémentaire' }}
+          </label>
+          <textarea rows="3"
+            placeholder="{{ activeModal === 'transfer' ? 'Ex: Paiement facture...' : 'Ajoutez une description...' }}"
+            class="input-field w-full px-6 py-5 rounded-[1.5rem] ring-4 ring-slate-50/50 focus:ring-emerald-600/10 text-base font-bold text-slate-900 placeholder:text-slate-200 transition-all border-none resize-none"></textarea>
+        </div>
+
+        <!-- Automated Proof Check -->
+        <div *ngIf="showFileSection" class="animate-fade-in space-y-4">
+          <div
+            class="p-5 bg-amber-50 rounded-2xl flex gap-4 items-start border border-amber-100 shadow-sm shadow-amber-100/50">
+            <div class="p-2 bg-amber-100 rounded-lg text-amber-700">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                </path>
+              </svg>
+            </div>
+            <p class="text-[11px] font-black text-amber-900 leading-relaxed uppercase tracking-widest">
+              Un justificatif d'identité est requis pour les opérations dépassant 10 000 DH (Régulation BAM).
+            </p>
+          </div>
+
+          <div
+            class="border-3 border-dashed border-slate-100 rounded-[2rem] p-10 text-center group hover:border-ab-primary/30 hover:bg-emerald-50/30 transition-all cursor-pointer relative overflow-hidden">
+            <input type="file" id="op-file" class="hidden" (change)="onFileSelected($event)">
+            <label for="op-file" class="cursor-pointer">
+              <svg
+                class="w-12 h-12 text-slate-200 mx-auto mb-4 group-hover:text-ab-primary group-hover:scale-110 transition-all"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+              <p class="text-xs font-black text-slate-600 uppercase tracking-widest">Téléverser le justificatif</p>
+              <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase">PDF, JPG (max 10MB)</p>
+            </label>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-4 pt-4">
+          <button type="button" (click)="closeModal()"
+            class="flex-1 px-8 py-5 border-2 border-slate-100 text-slate-400 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px]">
+            Abandonner
+          </button>
+          <button type="submit" [ngClass]="{
             'bg-ab-primary shadow-emerald-200': activeModal === 'deposit',
             'bg-rose-600 shadow-rose-200': activeModal === 'withdrawal',
             'bg-ab-accent shadow-amber-200': activeModal === 'transfer'
           }"
-          class="flex-1 px-8 py-5 text-white font-black rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition-all uppercase tracking-[0.2em] text-[10px]">
-          Confirmer
-        </button>
-      </div>
-    </form>
+            class="flex-1 px-8 py-5 text-white font-black rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition-all uppercase tracking-[0.2em] text-[10px]">
+            Confirmer
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

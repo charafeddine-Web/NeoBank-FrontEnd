@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 export interface Operation {
     id: number;
     date: string;
+    createdAt?: string; // from backend
     type: string;
     amount: number;
     status: string;
@@ -13,17 +14,9 @@ export interface Operation {
     description?: string;
 }
 
-export interface ClientProfile {
-    id: number;
-    fullName: string;
-    email: string;
+export interface AccountInfo {
     accountNumber: string;
     balance: number;
-    pendingOperations: number;
-    monthlyChange: number;
-    createdAt: string;
-    lastLogin?: string;
-    lastIp?: string;
 }
 
 @Injectable({
@@ -31,8 +24,13 @@ export interface ClientProfile {
 })
 export class ClientService {
     private apiUrl = 'http://localhost:8080/api/client/operations';
+    private accountUrl = 'http://localhost:8080/api/client/operations/account';
 
     constructor(private http: HttpClient) { }
+
+    getAccountInfo(): Observable<AccountInfo> {
+        return this.http.get<AccountInfo>(this.accountUrl);
+    }
 
     getOperations(): Observable<Operation[]> {
         return this.http.get<Operation[]>(this.apiUrl);
@@ -48,7 +46,7 @@ export class ClientService {
 
     uploadDocument(id: number, file: File): Observable<any> {
         const formData = new FormData();
-        formData.append('document', file);
+        formData.append('file', file);
         return this.http.post(`${this.apiUrl}/${id}/document`, formData);
     }
 }

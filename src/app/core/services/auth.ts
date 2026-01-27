@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { parseTokenRoles, parseTokenPayload } from '../guards/token-utils';
 
 export interface LoginRequest {
@@ -45,7 +45,16 @@ export class Auth {
   private readonly REFRESH_KEY = 'refresh_token';
   private readonly EXPIRES_AT = 'token_expires_at';
 
-  constructor(private http: HttpClient, private router: Router) { }
+  private currentUserSubject = new BehaviorSubject<any>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
+
+  constructor(private http: HttpClient, private router: Router) {
+    // Initial load from storage
+    const user = this.getUserInfo();
+    if (user) {
+      this.currentUserSubject.next(user);
+    }
+  }
 
   // If frontend runs on localhost:4200 (dev), point requests to backend on localhost:8080
   private getApiUrl(path: string): string {
@@ -139,6 +148,8 @@ export class Auth {
       const expiresAt = Date.now() + res.expiresIn * 1000;
       localStorage.setItem(this.EXPIRES_AT, String(expiresAt));
     }
+    // Update reactive state
+    this.currentUserSubject.next(this.getUserInfo());
   }
 
   getAccessToken(): string | null {
@@ -162,6 +173,7 @@ export class Auth {
     localStorage.removeItem(this.ACCESS_KEY);
     localStorage.removeItem(this.REFRESH_KEY);
     localStorage.removeItem(this.EXPIRES_AT);
+    this.currentUserSubject.next(null);
   }
 
   // Helper: return role strings from saved token

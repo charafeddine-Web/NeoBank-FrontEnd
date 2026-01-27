@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(private auth: Auth, private router: Router) {}
+  constructor(private auth: Auth, private router: Router) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.auth.getAccessToken();
@@ -23,7 +23,7 @@ export class JwtInterceptor implements HttpInterceptor {
       catchError((err) => {
         if (err && err.status === 401) {
           this.auth.clearTokens();
-          this.router.navigate(['/auth/login']);
+          this.router.navigate(['/login']);
         }
         return throwError(() => err);
       })

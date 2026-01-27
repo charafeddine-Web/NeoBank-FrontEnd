@@ -1,7 +1,247 @@
-<div class="min-h-screen bg-gray-50 flex items-center justify-center">
-  <div class="max-w-4xl w-full p-8 bg-white rounded-lg shadow">
-    <h1 class="text-2xl font-bold mb-4">Agent Dashboard</h1>
-    <p class="text-gray-600">Bienvenue sur le tableau de bord agent. Contenu à venir.</p>
-  </div>
+<div class="flex h-screen bg-slate-50 font-['Inter',sans-serif] text-slate-900 overflow-hidden">
+  <!-- Sidebar -->
+  <aside [class.translate-x-0]="isMobileMenuOpen"
+    class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-100 transition-transform duration-300 transform lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none">
+    <!-- Logo -->
+    <div class="p-8 border-b border-slate-100">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl gradient-agent flex items-center justify-center shadow-lg shadow-emerald-100">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">NeoBank</h1>
+          <p class="text-xs font-semibold text-emerald-600 uppercase tracking-widest">Espace Agent</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="p-6 space-y-2 mt-4">
+      <button (click)="showSection('dashboard')" [class.active]="currentSection === 'dashboard'"
+        class="sidebar-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-emerald-50/50 group transition-all">
+        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+          </path>
+        </svg>
+        <span class="text-sm font-bold tracking-tight">Vue d'ensemble</span>
+      </button>
+
+      <button (click)="showSection('pending')" [class.active]="currentSection === 'pending'"
+        class="sidebar-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-emerald-50/50 group transition-all">
+        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span class="text-sm font-bold tracking-tight">Opérations en attente</span>
+        <span *ngIf="stats.totalPending > 0"
+          class="ml-auto bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">{{ stats.totalPending
+          }}</span>
+      </button>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="absolute bottom-0 left-0 w-full p-6 border-t border-slate-100 bg-slate-50/50">
+      <div class="flex items-center gap-3 px-2 py-1">
+        <div
+          class="w-10 h-10 rounded-full gradient-agent flex items-center justify-center text-white font-bold text-sm shadow-md">
+          {{ accountInfo.fullName.substring(0, 2).toUpperCase() }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-black text-slate-900 truncate tracking-tight">{{ accountInfo.fullName }}</p>
+          <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">{{ accountInfo.role }}</p>
+        </div>
+        <button (click)="logout()" class="p-2 text-slate-400 hover:text-rose-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <!-- Header -->
+    <header
+      class="h-24 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-40">
+      <div class="flex items-center gap-4">
+        <button (click)="isMobileMenuOpen = !isMobileMenuOpen"
+          class="lg:hidden p-2.5 bg-slate-50 text-slate-600 rounded-xl">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <div>
+          <h2 class="text-2xl font-black text-slate-900 tracking-tight">
+            {{ currentSection === 'dashboard' ? 'Tableau de bord Agent' : 'Opérations en attente' }}
+          </h2>
+          <p class="text-xs font-bold text-slate-500 tracking-wide uppercase">Gestion des flux bancaires</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <div class="flex-1 p-6 lg:p-10 overflow-auto">
+      <!-- Stats Summary -->
+      <div *ngIf="currentSection === 'dashboard'" class="animate-fade-in space-y-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          <!-- Total Pending -->
+          <div class="card bg-white rounded-3xl p-8 shadow-sm border border-slate-100 group">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-slate-500 text-sm font-bold uppercase tracking-wider mb-1">À Valider</p>
+                <p class="text-4xl font-black text-slate-900 group-hover:text-emerald-600 transition-colors">{{
+                  stats.totalPending }}</p>
+              </div>
+              <div class="p-3 bg-emerald-50 rounded-2xl text-emerald-600 group-hover:rotate-12 transition-transform">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Access Card -->
+          <div (click)="showSection('pending')"
+            class="card gradient-agent text-white rounded-3xl p-8 shadow-xl shadow-emerald-200/50 cursor-pointer group">
+            <div class="relative z-10">
+              <p class="text-emerald-100 text-sm font-bold uppercase tracking-wider mb-4">Action Requise</p>
+              <h3 class="text-2xl font-black mb-2">Traiter les demandes</h3>
+              <p class="text-emerald-100/80 text-xs font-medium">Cliquez pour voir les opérations en attente de
+                vérification.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Placeholder
+        <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-2 h-8 gradient-agent rounded-full"></div>
+            <h3 class="text-xl font-black text-slate-900">Activité Récente</h3>
+          </div>
+          <p class="text-slate-400 font-medium italic">Historique des actions de l'agent (Bientôt disponible)</p>
+        </div>
+        -->
+      </div>
+
+      <!-- Pending Operations List -->
+      <div *ngIf="currentSection === 'pending'" class="animate-fade-in space-y-8">
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+          <div class="p-8 border-b border-slate-50">
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-8 gradient-agent rounded-full"></div>
+              <h3 class="text-2xl font-black text-slate-900 tracking-tight">Files d'attente</h3>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-slate-50/50">
+                <tr>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">ID / Date</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Client</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Opération</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Montant</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Régulation</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr *ngFor="let op of pendingOperations" class="hover:bg-slate-50/50 transition-colors group">
+                  <td class="px-8 py-6">
+                    <p class="text-sm font-black text-slate-900 mb-1">{{ op.id }}</p>
+                    <p class="text-[11px] font-bold text-slate-500">{{ op.date }}</p>
+                  </td>
+                  <td class="px-8 py-6">
+                    <p class="text-sm font-black text-slate-900 mb-1">{{ op.clientName || '---' }}</p>
+                    <p class="text-[11px] font-bold text-slate-500">{{ op.clientEmail }}</p>
+                  </td>
+                  <td class="px-8 py-6">
+                    <span class="text-sm font-black text-slate-900">{{ op.type }}</span>
+                  </td>
+                  <td class="px-8 py-6">
+                    <span class="text-base font-black text-slate-900">{{ op.amount | number:'1.2-2' }} DH</span>
+                  </td>
+                  <td class="px-8 py-6">
+                    <button *ngIf="op.hasFile" (click)="viewDocument(op.id)"
+                      class="flex items-center gap-2 text-[11px] font-black text-emerald-600 hover:text-emerald-800 uppercase tracking-widest">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                        </path>
+                      </svg>
+                      Voir Justificatif
+                    </button>
+                    <span *ngIf="!op.hasFile" class="text-xs font-bold text-slate-300">Aucun fichier</span>
+                  </td>
+                  <td class="px-8 py-6">
+                    <div class="flex items-center gap-3">
+                      <button (click)="approve(op.id)"
+                        class="p-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-xl transition-all shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                          </path>
+                        </svg>
+                      </button>
+                      <button (click)="openModal('reject', op)"
+                        class="p-2.5 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition-all shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr *ngIf="pendingOperations.length === 0">
+                  <td colspan="5" class="px-8 py-10 text-center">
+                    <p class="text-slate-400 font-bold">Aucune opération en attente.</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
 
+<!-- Reject Modal -->
+<div *ngIf="activeModal === 'reject'"
+  class="fixed inset-0 z-[100] flex items-center justify-center p-4 modal-backdrop animate-fade-in">
+  <div (click)="$event.stopPropagation()"
+    class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden border border-slate-50">
+    <div class="bg-rose-600 px-8 py-10 text-white relative overflow-hidden">
+      <h3 class="text-3xl font-black tracking-tight uppercase">Rejet</h3>
+      <p class="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">Motif obligatoire</p>
+    </div>
+    <div class="p-8 space-y-6">
+      <div class="space-y-3">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Commentaire /
+          Justification</label>
+        <textarea [(ngModel)]="rejectionComment" rows="4"
+          class="input-field w-full p-6 rounded-[1.5rem] ring-4 ring-slate-50 focus:ring-rose-600/10 text-base font-bold text-slate-900 border-none resize-none"></textarea>
+      </div>
+      <div class="flex gap-4">
+        <button (click)="closeModal()"
+          class="flex-1 px-8 py-4 border-2 border-slate-100 text-slate-400 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px]">Annuler</button>
+        <button (click)="selectedOperation && reject(selectedOperation.id, rejectionComment)"
+          [disabled]="!rejectionComment.trim()"
+          class="flex-1 px-8 py-4 bg-rose-600 text-white font-black rounded-2xl shadow-xl hover:brightness-110 disabled:opacity-50 transition-all uppercase tracking-[0.2em] text-[10px]">Confirmer
+          Rejet</button>
+      </div>
+    </div>
+  </div>
+</div>

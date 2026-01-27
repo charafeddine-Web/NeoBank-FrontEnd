@@ -1,7 +1,498 @@
-<div class="min-h-screen bg-gray-50 flex items-center justify-center">
-  <div class="max-w-4xl w-full p-8 bg-white rounded-lg shadow">
-    <h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
-    <p class="text-gray-600">Bienvenue sur le tableau de bord admin. Contenu à venir.</p>
-  </div>
+<div class="flex h-screen bg-ab-muted font-['Inter',sans-serif] text-slate-900 overflow-hidden relative">
+  <!-- Sidebar Backdrop (Mobile) -->
+  <div *ngIf="isMobileMenuOpen" (click)="isMobileMenuOpen = false" class="sidebar-backdrop"></div>
+
+  <!-- Sidebar -->
+  <aside [class.translate-x-0]="isMobileMenuOpen"
+    class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-100 transition-transform duration-300 transform lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none">
+    <!-- Logo -->
+    <div class="p-8 border-b border-slate-100">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl gradient-brand flex items-center justify-center shadow-lg shadow-emerald-100">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">NeoBank</h1>
+          <p class="text-xs font-semibold text-ab-primary uppercase tracking-widest">Administration</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="p-6 space-y-2 mt-4">
+      <button (click)="showSection('dashboard')" [class.active]="currentSection === 'dashboard'"
+        class="sidebar-link group">
+        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+          </path>
+        </svg>
+        <span class="text-sm font-bold tracking-tight">Console Centrale</span>
+      </button>
+
+      <button (click)="showSection('users')" [class.active]="currentSection === 'users'" class="sidebar-link group">
+        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+          </path>
+        </svg>
+        <span class="text-sm font-bold tracking-tight">Utilisateurs</span>
+      </button>
+
+      <button (click)="showSection('operations')" [class.active]="currentSection === 'operations'"
+        class="sidebar-link group">
+        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+          </path>
+        </svg>
+        <span class="text-sm font-bold tracking-tight">Flux Système</span>
+      </button>
+    </nav>
+
+    <!-- Admin Profile -->
+    <div class="absolute bottom-0 left-0 w-full p-6 border-t border-slate-100 bg-slate-50/50">
+      <div class="flex items-center gap-3 px-2 py-1">
+        <div
+          class="w-10 h-10 rounded-full gradient-brand flex items-center justify-center text-white font-bold text-sm shadow-md">
+          AD
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-black text-slate-900 truncate tracking-tight">{{ accountInfo.fullName }}</p>
+          <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Root Admin</p>
+        </div>
+        <button (click)="logout()" class="p-2 text-slate-400 hover:text-rose-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <!-- Header -->
+    <header
+      class="h-24 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-40">
+      <div class="flex items-center gap-4">
+        <button (click)="isMobileMenuOpen = !isMobileMenuOpen"
+          class="lg:hidden p-2.5 bg-slate-50 text-slate-600 rounded-xl">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <div>
+          <h2 class="text-2xl font-black text-slate-900 tracking-tight capitalize">
+            {{ currentSection === 'dashboard' ? 'Console de Surveillance' : currentSection === 'users' ? 'Gestion
+            Utilisateurs' : 'Journal Système' }}
+          </h2>
+          <p class="text-xs font-bold text-slate-500 tracking-wide uppercase italic">Contrôle infrastructurel global</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button
+          class="relative p-2.5 text-slate-500 hover:text-ab-primary hover:bg-emerald-50 rounded-xl transition-all">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+            </path>
+          </svg>
+          <span class="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+        </button>
+        <div class="h-8 w-px bg-slate-200 mx-2 hidden sm:block"></div>
+        <button class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-slate-50 transition-colors">
+          <div
+            class="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center text-xs font-bold text-white shadow-sm">
+            AD
+          </div>
+          <span class="text-sm font-bold text-slate-700">Administrateur</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <div class="flex-1 p-6 lg:p-10 overflow-auto">
+
+      <!-- Dashboard Section -->
+      <div *ngIf="currentSection === 'dashboard'" class="animate-fade-in space-y-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8">
+          <div class="card bg-white rounded-3xl p-8 shadow-sm border border-slate-100 relative group overflow-hidden">
+            <div class="relative z-10">
+              <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Utilisateurs</p>
+              <p class="text-4xl font-black text-slate-900 group-hover:text-ab-primary transition-colors">{{
+                stats.totalUsers }}</p>
+              <div class="mt-6 flex items-center gap-2">
+                <span class="status-badge status-active">{{ stats.activeUsers }} Actifs</span>
+              </div>
+            </div>
+            <div
+              class="absolute -right-4 -bottom-4 w-20 h-20 bg-emerald-50 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700">
+            </div>
+          </div>
+
+          <div class="card bg-white rounded-3xl p-8 shadow-sm border border-slate-100 relative group overflow-hidden">
+            <div class="relative z-10">
+              <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Volume Total</p>
+              <div class="flex items-baseline gap-1">
+                <span class="text-4xl font-black text-slate-900">{{ stats.systemVolume | number:'1.0-0' }}</span>
+                <span class="text-lg font-bold text-slate-400">DH</span>
+              </div>
+              <p class="mt-6 text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">Liquidité
+                globale</p>
+            </div>
+          </div>
+
+          <div class="card bg-white rounded-3xl p-8 shadow-sm border border-slate-100 relative group overflow-hidden">
+            <div class="relative z-10">
+              <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Opérations</p>
+              <p class="text-4xl font-black text-slate-900">{{ stats.totalOperations }}</p>
+              <p class="mt-6 text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">Total flux
+                système</p>
+            </div>
+          </div>
+
+          <div
+            class="card gradient-brand text-white rounded-3xl p-8 shadow-xl shadow-emerald-200/50 flex items-center justify-center relative overflow-hidden group">
+            <div
+              class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700">
+            </div>
+            <div class="text-center relative z-10">
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-2">État de l'infra</p>
+              <span
+                class="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 text-[10px] font-black uppercase tracking-wider ring-1 ring-white/30 backdrop-blur-sm">Opérationnel</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+          <div class="p-8 border-b border-slate-50 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-8 gradient-brand rounded-full"></div>
+              <h3 class="text-xl font-black text-slate-900">Activité Récente du Système</h3>
+            </div>
+            <button (click)="showSection('operations')"
+              class="text-sm font-black text-ab-primary hover:text-ab-primary-dark transition-colors px-4 py-2 hover:bg-emerald-50 rounded-xl uppercase tracking-widest">
+              Voir journal complet
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="w-full text-left">
+              <thead class="bg-slate-50/50">
+                <tr>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Flux</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Montant</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Statut</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr *ngFor="let op of allOperations.slice(0, 5)" class="hover:bg-slate-50/50 transition-colors group">
+                  <td class="px-8 py-6">
+                    <div class="flex items-center gap-4">
+                      <div [class]="op.isPositive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'"
+                        class="w-10 h-10 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            [attr.d]="op.isPositive ? 'M12 4v16m8-8H4' : 'M20 12H4'"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="text-sm font-black text-slate-900">{{ op.type }}</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">{{ op.date }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6 text-sm font-black tracking-tight"
+                    [class]="op.isPositive ? 'text-emerald-600' : 'text-slate-900'">
+                    {{ op.amount | number:'1.2-2' }} DH
+                  </td>
+                  <td class="px-8 py-6">
+                    <span [ngClass]="{
+                      'status-validated': op.status === 'validated' || op.status === 'approved',
+                      'status-pending': op.status === 'pending',
+                      'status-rejected': op.status === 'rejected'
+                    }" class="status-badge">
+                      {{ op.status }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Section -->
+      <div *ngIf="currentSection === 'users'" class="animate-fade-in space-y-8">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-8 gradient-brand rounded-full"></div>
+            <h3 class="text-2xl font-black text-slate-900 tracking-tight">Gestion des Comptes</h3>
+          </div>
+          <button (click)="openModal('createUser')"
+            class="px-6 py-3 bg-ab-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-emerald-200 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Nouvel Utilisateur
+          </button>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+          <div class="table-container">
+            <table class="w-full text-left">
+              <thead class="bg-slate-50/50">
+                <tr>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Identité</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Rôle</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Statut</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr *ngFor="let u of users" class="hover:bg-slate-50/50 transition-colors">
+                  <td class="px-8 py-6">
+                    <p class="text-sm font-black text-slate-900 mb-0.5 tracking-tight">{{ u.username }}</p>
+                    <p class="text-[11px] font-bold text-slate-500">{{ u.email }}</p>
+                  </td>
+                  <td class="px-8 py-6">
+                    <span
+                      class="text-[10px] font-black px-2 py-1 bg-slate-50 rounded border border-slate-100 text-slate-600 uppercase tracking-wider">{{
+                      u.role }}</span>
+                  </td>
+                  <td class="px-8 py-6">
+                    <span [class]="u.active ? 'status-active' : 'status-suspended'" class="status-badge">
+                      <span class="w-1.5 h-1.5 rounded-full"
+                        [class]="u.active ? 'bg-emerald-600' : 'bg-amber-600'"></span>
+                      {{ u.active ? 'Actif' : 'Suspendu' }}
+                    </span>
+                  </td>
+                  <td class="px-8 py-6">
+                    <div class="flex items-center gap-1.5">
+                      <button (click)="openModal('editUser', u)"
+                        class="p-2.5 text-slate-400 hover:text-ab-primary hover:bg-emerald-50 rounded-xl transition-all"
+                        title="Modifier">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                          </path>
+                        </svg>
+                      </button>
+                      <button *ngIf="u.active" (click)="suspend(u.id)"
+                        class="p-2.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all"
+                        title="Suspendre">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636"></path>
+                        </svg>
+                      </button>
+                      <button *ngIf="!u.active" (click)="activate(u.id)"
+                        class="p-2.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all"
+                        title="Activer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                          </path>
+                        </svg>
+                      </button>
+                      <button (click)="delete(u.id)"
+                        class="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                        title="Supprimer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                          </path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Operations Section -->
+      <div *ngIf="currentSection === 'operations'" class="animate-fade-in space-y-8">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-8 gradient-brand rounded-full"></div>
+            <h3 class="text-2xl font-black text-slate-900 tracking-tight">Journal Système Global</h3>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+          <div class="table-container">
+            <table class="w-full text-left">
+              <thead class="bg-slate-50/50">
+                <tr>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">ID / Date</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Utilisateur
+                  </th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Montant</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Statut</th>
+                  <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Contrôle</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr *ngFor="let op of allOperations" class="hover:bg-slate-50/50 transition-colors group">
+                  <td class="px-8 py-6">
+                    <p class="text-sm font-black text-slate-900 tracking-widest uppercase mb-1">{{ op.id }}</p>
+                    <p class="text-[10px] font-bold text-slate-400 tracking-tight">{{ op.date }}</p>
+                  </td>
+                  <td class="px-8 py-6">
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400">
+                        ?</div>
+                      <p class="text-sm font-bold text-slate-700 tracking-tight">{{ op.clientName || 'App Système' }}
+                      </p>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6">
+                    <p class="text-sm font-black tracking-tight" [class.text-emerald-600]="op.isPositive">{{ op.amount |
+                      number:'1.2-2' }} DH</p>
+                  </td>
+                  <td class="px-8 py-6">
+                    <span [ngClass]="{
+                            'status-validated': op.status === 'validated' || op.status === 'approved',
+                            'status-pending': op.status === 'pending',
+                            'status-rejected': op.status === 'rejected'
+                        }" class="status-badge">
+                      {{ op.status }}
+                    </span>
+                  </td>
+                  <td class="px-8 py-6">
+                    <div *ngIf="op.status === 'pending'" class="flex gap-2">
+                      <button (click)="forceApprove(op.id)"
+                        class="px-3 py-1.5 bg-ab-primary text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-md shadow-emerald-50">Valider</button>
+                      <button (click)="openModal('rejectOp', op)"
+                        class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-md shadow-rose-50">Rejeter</button>
+                    </div>
+                    <span *ngIf="op.status !== 'pending'"
+                      class="text-[10px] font-bold text-slate-300 italic tracking-wider">Transaction clôturée</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
 
+<!-- Unified Modal Layout (Matching Client) -->
+<div *ngIf="activeModal === 'createUser' || activeModal === 'editUser' || activeModal === 'rejectOp'"
+  class="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-8 modal-backdrop animate-fade-in"
+  (click)="closeModal()">
+
+  <!-- User Modal -->
+  <div *ngIf="activeModal !== 'rejectOp'" (click)="$event.stopPropagation()"
+    class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-slate-50">
+    <div class="gradient-brand px-8 py-10 text-white relative overflow-hidden shadow-inner">
+      <div
+        class="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full blur-3xl transition-transform duration-1000">
+      </div>
+      <div class="relative z-10">
+        <h3 class="text-3xl font-black tracking-tight uppercase leading-none">
+          {{ activeModal === 'createUser' ? 'Nouvel Agent' : 'Editer Profil' }}
+        </h3>
+        <p class="text-white/80 font-bold text-xs uppercase tracking-widest mt-2">Gestion des privilèges système</p>
+      </div>
+    </div>
+
+    <div class="max-h-[calc(100vh-250px)] overflow-y-auto custom-scrollbar">
+      <form class="p-8 space-y-8" (submit)="handleUserSubmit()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-3">
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Username</label>
+            <input type="text" [(ngModel)]="userForm.username" name="username" required
+              class="input-field w-full px-6 py-4 rounded-2xl border-none ring-1 ring-slate-100 text-sm font-bold tracking-tight">
+          </div>
+          <div class="space-y-3">
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Email</label>
+            <input type="email" [(ngModel)]="userForm.email" name="email" required
+              class="input-field w-full px-6 py-4 rounded-2xl border-none ring-1 ring-slate-100 text-sm font-bold tracking-tight">
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Mot de passe {{
+            activeModal === 'editUser' ? '(Laisser vide pour ne pas changer)' : '' }}</label>
+          <input type="password" [(ngModel)]="userForm.password" name="password"
+            [required]="activeModal === 'createUser'"
+            class="input-field w-full px-6 py-4 rounded-2xl border-none ring-1 ring-slate-100 text-sm font-bold tracking-tight">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-3">
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Rôle</label>
+            <select [(ngModel)]="userForm.role" name="role"
+              class="input-field w-full px-6 py-4 rounded-2xl border-none ring-1 ring-slate-100 text-sm font-bold uppercase tracking-wider">
+              <option value="CLIENT">Client</option>
+              <option value="AGENT_BANCAIRE">Agent Bancaire</option>
+              <option value="ADMIN">Administrateur</option>
+            </select>
+          </div>
+          <div class="flex flex-col justify-center">
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1">État
+              Initial</label>
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <div class="relative">
+                <input type="checkbox" [(ngModel)]="userForm.active" name="active" class="sr-only">
+                <div class="w-12 h-6 bg-slate-100 rounded-full transition-colors"
+                  [class.bg-ab-primary]="userForm.active"></div>
+                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform"
+                  [style.transform]="userForm.active ? 'translateX(24px)' : 'none'"></div>
+              </div>
+              <span class="text-xs font-black text-slate-600 uppercase tracking-widest">Compte Actif</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex gap-4 pt-4">
+          <button type="button" (click)="closeModal()"
+            class="flex-1 px-8 py-5 border-2 border-slate-100 text-[10px] font-black text-slate-400 rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em]">Annuler</button>
+          <button type="submit"
+            class="flex-1 px-8 py-5 bg-ab-primary text-[10px] font-black text-white rounded-2xl shadow-xl shadow-emerald-100 hover:brightness-110 transition-all uppercase tracking-[0.2em]">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reject Modal -->
+  <div *ngIf="activeModal === 'rejectOp'" (click)="$event.stopPropagation()"
+    class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden border border-slate-50">
+    <div class="bg-rose-600 p-10 text-white relative overflow-hidden">
+      <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+      <h3 class="text-3xl font-black uppercase italic tracking-tighter relative z-10 leading-none">Intervention</h3>
+      <p class="text-white/80 font-bold text-[10px] uppercase tracking-[0.2em] mt-2 relative z-10">Annulation forcée
+        système</p>
+    </div>
+    <div class="p-8 space-y-6">
+      <div class="space-y-3">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Motif de l'action</label>
+        <textarea [(ngModel)]="rejectionComment" placeholder="Motif de l'intervention administrative..." rows="4"
+          class="input-field w-full p-5 rounded-2xl border-none ring-1 ring-slate-100 text-sm font-bold resize-none"></textarea>
+      </div>
+      <div class="flex gap-4">
+        <button type="button" (click)="closeModal()"
+          class="flex-1 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Retour</button>
+        <button (click)="selectedOperation && forceReject(selectedOperation.id, rejectionComment)"
+          [disabled]="!rejectionComment.trim()"
+          class="flex-1 py-4 bg-rose-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-rose-100 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50">Confirmer
+          Rejet</button>
+      </div>
+    </div>
+  </div>
+</div>

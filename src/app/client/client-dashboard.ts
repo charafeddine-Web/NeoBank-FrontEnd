@@ -29,7 +29,6 @@ export class ClientDashboard implements OnInit, OnDestroy {
     accountNumber: '...',
     balance: 0,
     pendingOperations: 0,
-    monthlyChange: 540,
     createdAt: '--/--/----',
     lastLogin: 'Session active',
     lastIp: '--'
@@ -71,7 +70,6 @@ export class ClientDashboard implements OnInit, OnDestroy {
   loadData() {
     this.clientService.getOperations().subscribe({
       next: (data) => {
-        // Sort by createdAt descending and take 4 for recent
         const mappedInfo = data.map((op: any) => ({
           ...op,
           date: this.formatDate(op.createdAt),
@@ -169,6 +167,11 @@ export class ClientDashboard implements OnInit, OnDestroy {
 
     if (amount <= 0) return;
 
+    if ((type === 'withdrawal' || type === 'transfer') && amount > this.accountInfo.balance) {
+      alert(`Opération impossible : Solde insuffisant. Votre solde actuel est de ${this.accountInfo.balance.toFixed(2)} DH.`);
+      return;
+    }
+
     if (this.showFileSection && !this.selectedFile) {
       alert('Veuillez téléverser un justificatif pour les opérations supérieures à 10 000 DH.');
       return;
@@ -178,6 +181,7 @@ export class ClientDashboard implements OnInit, OnDestroy {
       amount: amount,
       type: type.toUpperCase(),
       sourceAccountNumber: this.accountInfo.accountNumber,
+      destinationAccountNumber: beneficiary,
       description: beneficiary ? `Virement vers: ${beneficiary}. ${description}` : description,
       date: new Date().toISOString()
     };
@@ -203,7 +207,8 @@ export class ClientDashboard implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error creating operation', err);
-        alert('Erreur lors de la création de l\'opération.');
+        const serverMsg = err.error?.message || 'Erreur lors de la création de l\'opération.';
+        alert(`Échec de l'opération : ${serverMsg}`);
       }
     });
   }
@@ -219,8 +224,16 @@ export class ClientDashboard implements OnInit, OnDestroy {
   viewDocument(id: number) {
     this.clientService.getOperationDocument(id).subscribe({
       next: (blob) => {
+        if (blob.type.includes('text/html')) {
+          alert('Le document semble corrompu ou inaccessible (Session expirée ?).');
+          return;
+        }
         const url = window.URL.createObjectURL(blob);
-        window.open(url);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `justificatif_op_${id}`;
+        link.click();
+        window.URL.revokeObjectURL(url);
       },
       error: (err) => alert('Impossible de charger le document.')
     });

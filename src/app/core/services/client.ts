@@ -12,6 +12,8 @@ export interface Operation {
     isPositive: boolean;
     hasFile: boolean;
     description?: string;
+    clientName?: string;
+    clientEmail?: string;
 }
 
 export interface AccountInfo {

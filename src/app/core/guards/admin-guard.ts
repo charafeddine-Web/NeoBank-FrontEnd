@@ -1,7 +1,7 @@
-import { CanActivateFn } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { Auth } from '../services/auth';
-import { Router } from '@angular/router';
+import { hasRole } from './token-utils';
 
 export const adminGuard: CanActivateFn = (route, state) => {
   const auth = inject(Auth);
@@ -9,7 +9,12 @@ export const adminGuard: CanActivateFn = (route, state) => {
 
   const token = auth.getAccessToken();
   if (!token) {
-    router.navigate(['/']);
+    router.navigate(['/login']);
+    return false;
+  }
+
+  if (!hasRole(token, r => r.includes('ADMIN'))) {
+    router.navigate(['/login']);
     return false;
   }
   return true;

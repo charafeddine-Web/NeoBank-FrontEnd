@@ -323,13 +323,14 @@
                   </td>
                   <td class="px-8 py-6">
                     <span [ngClass]="{
-                      'status-validated': op.status === 'validated',
+                      'status-validated': op.status === 'validated' || op.status === 'approved',
                       'status-pending': op.status === 'pending',
                       'status-rejected': op.status === 'rejected'
                     }" class="status-badge">
                       <span class="w-1.5 h-1.5 rounded-full"
-                        [class]="op.status === 'validated' ? 'bg-emerald-600' : op.status === 'pending' ? 'bg-amber-600' : 'bg-rose-600'"></span>
-                      {{ op.status === 'validated' ? 'Validé' : op.status === 'pending' ? 'En attente' : 'Rejeté' }}
+                        [class]="(op.status === 'validated' || op.status === 'approved') ? 'bg-emerald-600' : op.status === 'pending' ? 'bg-amber-600' : 'bg-rose-600'"></span>
+                      {{ (op.status === 'validated' || op.status === 'approved') ? 'Validé' : op.status === 'pending' ?
+                      'En attente' : 'Rejeté' }}
                     </span>
                   </td>
                 </tr>
@@ -396,13 +397,14 @@
                   </td>
                   <td class="px-8 py-6">
                     <span [ngClass]="{
-                      'status-validated': op.status === 'validated',
+                      'status-validated': op.status === 'validated' || op.status === 'approved',
                       'status-pending': op.status === 'pending',
                       'status-rejected': op.status === 'rejected'
                     }" class="status-badge">
                       <span class="w-1.5 h-1.5 rounded-full"
-                        [class]="op.status === 'validated' ? 'bg-emerald-600' : op.status === 'pending' ? 'bg-amber-600' : 'bg-rose-600'"></span>
-                      {{ op.status === 'validated' ? 'Validé' : op.status === 'pending' ? 'En attente' : 'Rejeté' }}
+                        [class]="(op.status === 'validated' || op.status === 'approved') ? 'bg-emerald-600' : op.status === 'pending' ? 'bg-amber-600' : 'bg-rose-600'"></span>
+                      {{ (op.status === 'validated' || op.status === 'approved') ? 'Validé' : op.status === 'pending' ?
+                      'En attente' : 'Rejeté' }}
                     </span>
                   </td>
                   <td class="px-8 py-6">

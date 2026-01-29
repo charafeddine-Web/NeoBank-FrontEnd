@@ -1,59 +1,25 @@
 # NeobankFrontEnd
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
+<img width="1905" height="869" alt="image" src="https://github.com/user-attachments/assets/bb3ac3af-a4ac-458f-8654-00eda95dbaba" />
 
-## Development server
+# Client
 
-To start a local development server, run:
+<img width="1902" height="869" alt="image" src="https://github.com/user-attachments/assets/e758ed69-321c-46b8-b547-b11feb457a78" />
+<img width="1905" height="871" alt="image" src="https://github.com/user-attachments/assets/71877ab0-b4d9-497a-a40b-79fe8b680b88" />
 
-```bash
-ng serve
-```
+# Agent_Boncaire
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+<img width="1909" height="873" alt="image" src="https://github.com/user-attachments/assets/0d2d61f7-4ce2-4174-bb4a-d658f389a87c" />
+<img width="1906" height="877" alt="image" src="https://github.com/user-attachments/assets/84899dde-ac7a-4b04-8b5c-6c21220c8f9d" />
 
-## Code scaffolding
+# Admin
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+<img width="1908" height="869" alt="image" src="https://github.com/user-attachments/assets/92af449c-e3e0-4636-b629-5d9acf4b285a" />
+<img width="1910" height="873" alt="image" src="https://github.com/user-attachments/assets/ec877bbb-6d51-4f21-9131-b13a5a717dfb" />
+<img width="1907" height="873" alt="image" src="https://github.com/user-attachments/assets/d17422c2-e4f2-4a2b-8949-6f3aa075d8fa" />
 
-```bash
-ng generate component component-name
-```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-```bash
-ng generate --help
-```
 
-## Building
 
-To build the project run:
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
